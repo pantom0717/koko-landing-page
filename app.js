@@ -9,8 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('successMessage');
 
     if (emailForm) {
-        emailForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // 'submit' 이벤트 리스너를 async 함수로 변경
+        emailForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // 폼의 기본 제출 동작(페이지 새로고침) 방지
 
             const emailInput = emailForm.querySelector('.email-input');
             const email = emailInput.value.trim();
@@ -21,38 +22,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Simulate form submission
             const submitButton = emailForm.querySelector('.btn');
             const originalText = submitButton.textContent;
 
-            // Show loading state
+            // 로딩 상태 표시
             submitButton.textContent = '전송 중...';
             submitButton.disabled = true;
 
-            // Simulate API call delay
-            setTimeout(() => {
-                // Reset button
+            try {
+                // FormData 객체를 생성하여 폼의 모든 필드 데이터를 캡처
+                const formData = new FormData(e.target);
+                // Netlify Forms가 폼을 올바르게 식별하도록 'form-name' 필드를 추가
+                // (이때 e.target.getAttribute("name")은 index.html에서 설정한 "download-signup"이 됩니다.)
+                formData.append("form-name", e.target.getAttribute("name"));
+
+                // fetch API를 사용하여 Netlify로 데이터 전송
+                const response = await fetch(e.target.action, { // 폼의 action URL로 POST 요청
+                    method: "POST",
+                    body: formData, // FormData 객체를 그대로 보냅니다 (Content-Type은 자동으로 설정됨)
+                    // Note: If you were sending JSON, you'd use JSON.stringify and set 'Content-Type': 'application/json'
+                });
+
+                if (response.ok) { // 응답이 성공적이면 (HTTP status 200-299)
+                    // 성공 처리: 폼 숨기고 성공 메시지 표시 (기존 로직 그대로)
+                    emailForm.style.display = 'none';
+                    successMessage.classList.remove('hidden');
+
+                    successMessage.style.opacity = '0';
+                    successMessage.style.transform = 'translateY(20px)';
+
+                    setTimeout(() => {
+                        successMessage.style.transition = 'all 0.5s ease';
+                        successMessage.style.opacity = '1';
+                        successMessage.style.transform = 'translateY(0)';
+                    }, 100);
+
+                    // 사용자에게 성공 알림
+                    showNotification('이메일 주소가 성공적으로 전송되었습니다! ✨', 'success');
+                    emailInput.value = ''; // 폼 필드 초기화
+                } else {
+                    // 실패 처리: Netlify 응답이 성공적이지 않을 때
+                    const errorText = await response.text(); // 오류 메시지 가져오기
+                    console.error('폼 제출 실패:', response.status, errorText);
+                    showNotification('이메일 전송에 실패했습니다. 다시 시도해주세요.', 'error');
+                }
+            } catch (error) {
+                // 네트워크 오류 등 예외 발생 시
+                console.error('폼 제출 중 오류 발생:', error);
+                showNotification('오류가 발생했습니다. 다시 시도해주세요.', 'error');
+            } finally {
+                // 성공/실패 여부와 관계없이 버튼 상태 초기화
                 submitButton.textContent = originalText;
                 submitButton.disabled = false;
-
-                // Hide form and show success message
-                emailForm.style.display = 'none';
-                successMessage.classList.remove('hidden');
-
-                // Add animation to success message
-                successMessage.style.opacity = '0';
-                successMessage.style.transform = 'translateY(20px)';
-
-                setTimeout(() => {
-                    successMessage.style.transition = 'all 0.5s ease';
-                    successMessage.style.opacity = '1';
-                    successMessage.style.transform = 'translateY(0)';
-                }, 100);
-
-                // Show notification
-                showNotification('다운로드 링크가 이메일로 전송되었습니다! 📱', 'success');
-
-            }, 1500);
+            }
         });
     }
 

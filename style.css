@@ -1011,7 +1011,7 @@ section {
 .feature-screen-item {
     /* 기존 .app-screen 스타일은 유지됩니다. */
     /* solutions 섹션의 카드(약 250px) 크기를 고려하여, 3개 이미지가 나란히 오도록 너비를 조정합니다. */
-    max-width: 180px; /* 각 이미지의 최대 너비를 180px로 더 작게 조정 */
+    max-width: 160px; /* 각 이미지의 최대 너비를 180px로 더 작게 조정 */
     width: 100%; /* 부모 요소 너비에 따라 유동적으로 크기 조절 */
     height: auto; /* 이미지 비율을 유지 */
     object-fit: contain;
@@ -1019,6 +1019,7 @@ section {
     box-shadow: var(--shadow-kawaii);
     transition: all var(--duration-normal) var(--ease-standard);
     border: 1px solid rgba(221, 160, 221, 0.2);
+    aspect-ratio: 9 / 16;
 }
 
 /* 각 이미지에 개별적인 호버 효과 추가 (선택 사항) */
@@ -1035,7 +1036,8 @@ section {
       gap: var(--space-16);
   }
   .feature-screen-item {
-      max-width: 60%; /* 모바일에서 화면 너비의 60%를 차지하도록 더 작게 조정 */
+      max-width: 50%;
+      aspect-ratio: 9 / 16; /* 모바일에서 화면 너비의 60%를 차지하도록 더 작게 조정 */
   }
 }
 

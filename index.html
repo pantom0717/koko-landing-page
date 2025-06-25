@@ -169,12 +169,15 @@
             <div class="cta-content">
                 <h2>코코와 함께 새로운 일상 기록을 시작해보세요</h2>
                 <p>이메일을 입력하시면 다운로드 링크를 보내드립니다</p>
-                <form class="email-form" id="emailForm">
-                    <div class="form-group">
-                        <input type="email" class="form-control email-input" placeholder="이메일 주소를 입력해주세요" required>
-                        <button type="submit" class="btn btn--primary">다운로드 링크 받기</button>
-                    </div>
-                </form>
+                    <form class="email-form" id="emailForm" data-netlify="true" name="download-signup" action="/">
+                        <div class="form-group">
+                            <input type="email" class="form-control email-input" placeholder="이메일 주소를 입력해주세요" required>
+                            <button type="submit" class="btn btn--primary">다운로드 링크 받기</button>
+                        </div>
+                    </form>
+                    <form name="download-signup" netlify hidden>
+                        <input type="email" name="email" />
+                    </form>
                 <div id="successMessage" class="success-message hidden">
                     <div class="success-icon">✨</div>
                     <p>수분이내로 이메일로 다운로드 링크가 전송됩니다!</p>
